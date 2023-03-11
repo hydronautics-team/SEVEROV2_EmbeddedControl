@@ -8,36 +8,25 @@
 #include "messages.h"
 
 enum VMA {
-	MarshLEFT = 0,
-    MarshRIGHT,
-    VertLEFT,
-    VertRIGHT,
-    VertBACK,
-	Lag1st,
-    Lag2nd,
-	MarshDown
+	FrLowR = 0,
+    FrLowL,
+    BackLowR,
+    BackLowL,
+    FrUpR,
+	FrUpL,
+    BackUpL,
+	BackUpR
 };
-
-//enum VMA {
-//	HML = 0, 	// Horizontal march left
-//	HMR,		// Horizontal march right
-//	HLB,		// Horizontal lag back
-//	HLF,		// Horizontal lag front
-//	VL,			// Vertical left
-//	VR,			// Vertical right
-//	VB,			// Vertical back
-//	VF			// Vertical front
-//};
 
 #define DEV_AMOUNT 6
 
 enum DEV {
-    AGAR = 0,
-    GRAB,
+    GRAB = 0,
     GRAB_ROTATION,
     TILT,
     DEV1,
-	DEV2
+	DEV2,
+    DEV3
 };
 
 #define LOGDEV_AMOUNT 1
@@ -92,6 +81,7 @@ struct robotState_s {
 	uint8_t flash; // Was flash read successful
 	uint8_t operationMode; // Currrent operation type
 	uint8_t pcCounter;
+	uint8_t thrustersOn
 	float lag_error;
 };
 

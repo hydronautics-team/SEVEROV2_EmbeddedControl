@@ -92,28 +92,27 @@ struct devicesRequest_s
   */
 struct devicesResponse_s
 {
-    uint8_t AA;
-    uint8_t address;
-    uint8_t errors;
-    uint16_t current1;
-    uint16_t current2;
-    uint8_t velocity1;
-    uint8_t velocity2;
-    uint8_t checksum;
+	uint8_t AA;
+	uint8_t address;
+	uint8_t errors;
+	uint16_t current1;
+	uint16_t current2;
+	uint8_t velocity1;
+	uint8_t velocity2;
+	uint8_t checksum;
 };
 
 #define SHORE_REQUEST_CODE             0xA5
 
-#define SHORE_REQUEST_LENGTH           30
+#define SHORE_REQUEST_LENGTH           22
 
-#define SHORE_STABILIZE_DEPTH_BIT       0
-#define SHORE_STABILIZE_ROLL_BIT        1
-#define SHORE_STABILIZE_PITCH_BIT       2
-#define SHORE_STABILIZE_YAW_BIT         3
-#define SHORE_STABILIZE_LAG_BIT         4
-#define SHORE_STABILIZE_MARCH_BIT       5
-#define SHORE_STABILIZE_IMU_BIT         6
-#define SHORE_STABILIZE_SAVE_BIT        7
+#define SHORE_BIT_STABILIZE_ROLL        0
+#define SHORE_BIT_STABILIZE_YAW         1
+#define SHORE_BIT_STABILIZE_PITCH       2
+#define SHORE_BIT_STABILIZE_DEPTH       3
+#define SHORE_BIT_RESET_IMU         	4
+#define SHORE_BIT_ON_THRUSTERS   		5
+#define SHORE_BIT_CONFIG_SAVE   		6
 
 #define SHORE_DEVICE_AC_BIT 			0
 
@@ -128,28 +127,26 @@ struct shoreRequest_s
 {
 	uint8_t type;
 	uint8_t flags;
+	
 	int16_t march;
 	int16_t lag;
 	int16_t depth;
 	int16_t roll;
 	int16_t pitch;
 	int16_t yaw;
-	int8_t light;
+
 	int8_t grab;
-	int8_t tilt;
 	int8_t grab_rotate;
+	int8_t tilt;
 	int8_t dev1;
 	int8_t dev2;
-	int32_t lag_error;
-	uint8_t dev_flags;
-	uint8_t stabilize_flags;
-	uint8_t cameras;
-	uint8_t pc_reset;
-	uint16_t checksum;
+	int8_t dev3;
+
+	uint16_t checksum; // CheckSumm16b
 };
 
 #define REQUEST_CONFIG_CODE             0x55
-#define REQUEST_CONFIG_LENGTH           84
+#define REQUEST_CONFIG_LENGTH           69
 
 /** \brief Template for shore configuration request message (surface control unit to main MCU)
   *
@@ -157,44 +154,39 @@ struct shoreRequest_s
   */
 struct shoreConfigRequest_s
 {
-    uint8_t type;
-    uint8_t contour;
+	uint8_t type;
+	uint8_t flags;
+	uint8_t contour;
 
-    int16_t march;
-    int16_t lag;
-    int16_t depth;
-    int16_t roll;
-    int16_t pitch;
-    int16_t yaw; // 14
+	int16_t march;
+	int16_t lag;
+	int16_t depth;
+	int16_t roll;
+	int16_t pitch;
+	int16_t yaw;
 
-	float pJoyUnitCast;
-	float pSpeedDyn;
-	float pErrGain;
+    float pJoyUnitCast;
+    float pSpeedDyn;
+    float pErrGain;
 
-	float posFilterT;
-	float posFilterK;
-	float speedFilterT;
-	float speedFilterK;
+    float posFilterT;
+    float posFilterK;
+    float speedFilterT;
+    float speedFilterK;
 
-	float pid_pGain;
-	float pid_iGain;
-	float pid_iMax;
-	float pid_iMin;
+    float pid_pGain;
+    float pid_iGain;
+    float pid_iMax;
+    float pid_iMin;
+	   
+    float pThrustersMin;
+    float pThrustersMax;
 
-	float pThrustersMin;
-	float pThrustersMax;
-
-	float thrustersFilterT;
-	float thrustersFilterK;
-
-	float sOutSummatorMax;
-	float sOutSummatorMin;
-
-    uint16_t checksum;
+	uint16_t checksum;
 };
 
 #define DIRECT_REQUEST_CODE 			0xAA
-#define SHORE_REQUEST_DIRECT_LENGTH		17
+#define SHORE_REQUEST_DIRECT_LENGTH		12
 
 /** \brief Template for shore direct message (surface control unit to main MCU)
   *
@@ -203,14 +195,14 @@ struct shoreConfigRequest_s
 struct shoreRequestDirect_s
 {
 	uint8_t type;
-	uint8_t number;
 	uint8_t id;
+	uint8_t address;
 
 	int8_t velocity;
 
 	uint8_t reverse;
-	float kForward;
-	float kBackward;
+	int8_t kForward;
+	int8_t kBackward;
 
 	int8_t sForward;
 	int8_t sBackward;
@@ -223,77 +215,57 @@ struct shoreRequestDirect_s
 struct shoreResponseDirect_s
 {
 	uint8_t number;
-	uint8_t connection;
-	uint16_t current;
 
 	uint16_t checksum;
 };
 
-#define SHORE_RESPONSE_LENGTH			70
+#define SHORE_RESPONSE_LENGTH			30
 
 struct shoreResponse_s
 {
-    float roll;
-    float pitch;
-    float yaw;
-
-    float rollSpeed;
-    float pitchSpeed;
-    float yawSpeed;
-
-    float pressure;
-    float in_pressure;
-
-    uint8_t dev_state;
-    int16_t leak_data;
-
-    uint16_t thrusterCurrent[THRUSTERS_NUMBER];
-    uint16_t devCurrent[DEVICES_NUMBER];
-
-    uint16_t vma_errors;
-    uint16_t dev_errors;
-    uint8_t pc_errors;
-
-    uint16_t checksum;
-};
-
-#define SHORE_CONFIG_RESPONSE_LENGTH			99
-
-struct shoreConfigResponse_s
-{
-	uint8_t code;
-
 	float roll;
 	float pitch;
 	float yaw;
-	float raw_yaw;
+	float depth;
 
 	float rollSpeed;
 	float pitchSpeed;
 	float yawSpeed;
 
-	float pressure;
-	float in_pressure;
+	uint16_t checksum;
+};
+
+#define SHORE_CONFIG_RESPONSE_LENGTH			90
+
+struct shoreConfigResponse_s
+{
+	float roll;
+	float pitch;
+	float yaw;
+	float depth;
+
+	float rollSpeed;
+	float pitchSpeed;
+	float yawSpeed;
 
 	float inputSignal;
 	float speedSignal;
 	float posSignal;
 
-	float joyUnitCasted;
-	float joy_iValue;
-	float posError;
-	float speedError;
-	float dynSummator;
-	float pidValue;
-	float posErrorAmp;
-	float speedFiltered;
-	float posFiltered;
-	float pid_iValue;
-	float thrustersFiltered;
+    float joyUnitCasted;
+    float posError;
+    float joy_iValue;
+    float speedError;
+    float dynSummator;
+    float pidValue;
+    float posErrorAmp;
+    float speedFiltered;
+    float posFiltered;
+    float pid_iValue;
+    float pid_pValue;
+    float outputSignal;
 
-	float outputSignal;
-
-    uint16_t checksum;
+	uint16_t checksum;
 };
 
 #define SHORE_REQUEST_MODES_NUMBER 3
@@ -311,26 +283,26 @@ enum ShoreRequestModes {
 
 struct imuResponse_s
 {
-    uint16_t gyro_x;
-    uint16_t gyro_y;
-    uint16_t gyro_z;
+	uint16_t gyro_x;
+	uint16_t gyro_y;
+	uint16_t gyro_z;
 
-    uint16_t accel_x;
-    uint16_t accel_y;
-    uint16_t accel_z;
+	uint16_t accel_x;
+	uint16_t accel_y;
+	uint16_t accel_z;
 
-    uint16_t mag_x;
-    uint16_t mag_y;
-    uint16_t mag_z;
+	uint16_t mag_x;
+	uint16_t mag_y;
+	uint16_t mag_z;
 
-    uint16_t euler_x;
-    uint16_t euler_y;
-    uint16_t euler_z;
+	uint16_t euler_x;
+	uint16_t euler_y;
+	uint16_t euler_z;
 
-    uint16_t quat_a;
-    uint16_t quat_b;
-    uint16_t quat_c;
-    uint16_t quat_d;
+	uint16_t quat_a;
+	uint16_t quat_b;
+	uint16_t quat_c;
+	uint16_t quat_d;
 };
 
 #define GYRO_PROC_X 5 // 0x5C
