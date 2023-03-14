@@ -14,9 +14,9 @@ struct robotStabilizationState_s 		rStabState[STABILIZATION_AMOUNT];
 uint8_t ShoreRequestBuffer[REQUEST_CONFIG_LENGTH];
 uint8_t ShoreResponseBuffer[SHORE_CONFIG_RESPONSE_LENGTH];
 
-uint8_t ImuRequestBuffer[IMU_REQUEST_LENGTH] = { 's', 'n', 'p', 0x00, 0xAE, 0x01, 0xFF };
-uint8_t ImuResetRequestBuffer[IMU_REQUEST_LENGTH] = { 's', 'n', 'p', 0x00, 0xAC, 0x01, 0xFD };
-uint8_t ImuResponseBuffer[IMU_RESPONSE_LENGTH*IMU_CHECKSUMS];
+uint8_t ImuRequestBuffer[IMU_REQUEST_LENGTH] = "$VNWRG,75,2,10,01,0129*XX\r\n";
+uint8_t ImuResetRequestBuffer[IMU_REQUEST_LENGTH_AC] = "$VNWRG,06,0*XX\r\n"; //отключаем передачу данных ACSII
+uint8_t ImuResponseBuffer[IMU_RESPONSE_LENGTH];
 
 uint8_t ThrustersRequestBuffer[THRUSTERS_REQUEST_LENGTH];
 uint8_t ThrustersResponseBuffer[THRUSTERS_NUMBER][THRUSTERS_RESPONSE_LENGTH];

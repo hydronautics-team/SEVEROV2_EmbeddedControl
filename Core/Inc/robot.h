@@ -138,6 +138,7 @@ struct robotSensors_s {
 	float quatC;
 	float quatD;
 	bool resetIMU;
+	unsigned short  crc;
 
 	float pressure;
 	float pressure_null;
@@ -244,6 +245,31 @@ struct robotStabilizationState_s {
 
 	float LastTick;
 };
+
+typedef struct {
+    uint8_t sync;
+    uint8_t group;
+    uint16_t group_1_fields;
+} header_VN;
+
+typedef struct{
+	header_VN header;
+    uint64_t TimeStartup;
+    float yaw;
+    float pitch;
+    float roll;
+    float X_rate;
+    float Y_rate;
+    float Z_rate;
+    float X_accel;
+    float Y_accel;
+    float Z_accel;
+
+    union {
+        unsigned short crc;
+        uint8_t temp[2];
+    } crc;
+} DataFromVectorNav;
 
 
 #endif

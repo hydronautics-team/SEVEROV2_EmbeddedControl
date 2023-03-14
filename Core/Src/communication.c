@@ -7,6 +7,7 @@
 #include "main.h"
 #include "tim.h"
 #include "math.h"
+#include "can.h"
 
 #include "communication.h"
 #include "global.h"
@@ -116,7 +117,7 @@ void uartBusesInit()
 	uartBus[SHORE_UART].txrxType = TXRX_IT;
 
 	// Thrusters UART configuration
-	uartBus[THRUSTERS_UART].huart = &huart2;
+	uartBus[THRUSTERS_UART].huart = &huart3;
 	uartBus[THRUSTERS_UART].rxBuffer = 0; // Receive bugger will be set before receive
 	uartBus[THRUSTERS_UART].txBuffer = 0; // Transmit bugger will be set before transmit
 	uartBus[THRUSTERS_UART].rxLength = 0; // Receive length will be set before transmit
@@ -128,28 +129,28 @@ void uartBusesInit()
 	uartBus[THRUSTERS_UART].txrxType = TXRX_DMA;
 
 	// Devices UART configuration
-	uartBus[DEVICES_UART].huart = &huart3;
-	uartBus[DEVICES_UART].rxBuffer = 0; // Receive bugger will be set before receive
-	uartBus[DEVICES_UART].txBuffer = 0; // Transmit bugger will be set before transmit
-	uartBus[DEVICES_UART].rxLength = DEVICES_REQUEST_LENGTH;
-	uartBus[DEVICES_UART].txLength = DEVICES_RESPONSE_LENGTH;
-	uartBus[DEVICES_UART].brokenRxTolerance = 0; // There is no special event on this bus
-	uartBus[DEVICES_UART].timeoutRxTolerance = 0; // There is no special event on this bus
-	uartBus[DEVICES_UART].receiveTimeout = 100;
-	uartBus[DEVICES_UART].transmitTimeout = 100;
-	uartBus[DEVICES_UART].txrxType = TXRX_DMA;
+//	uartBus[DEVICES_UART].huart = &huart4;
+//	uartBus[DEVICES_UART].rxBuffer = 0; // Receive bugger will be set before receive
+//	uartBus[DEVICES_UART].txBuffer = 0; // Transmit bugger will be set before transmit
+//	uartBus[DEVICES_UART].rxLength = DEVICES_REQUEST_LENGTH;
+//	uartBus[DEVICES_UART].txLength = DEVICES_RESPONSE_LENGTH;
+//	uartBus[DEVICES_UART].brokenRxTolerance = 0; // There is no special event on this bus
+//	uartBus[DEVICES_UART].timeoutRxTolerance = 0; // There is no special event on this bus
+//	uartBus[DEVICES_UART].receiveTimeout = 100;
+//	uartBus[DEVICES_UART].transmitTimeout = 100;
+//	uartBus[DEVICES_UART].txrxType = TXRX_DMA;
 
-//	// IMU UART configuration
-//	uartBus[IMU_UART].huart = &huart4;
-//	uartBus[IMU_UART].rxBuffer = ImuResponseBuffer;
-//	uartBus[IMU_UART].txBuffer = 0; // Buffer will be set before transmit
-//	uartBus[IMU_UART].rxLength = 0; // Receive length will be set before transmit
-//	uartBus[IMU_UART].txLength = 0; // Transmit length will be set before transmit
-//	uartBus[IMU_UART].brokenRxTolerance = 0; // There is no special event on this bus
-//	uartBus[IMU_UART].timeoutRxTolerance = 0; // There is no special event on this bus
-//	uartBus[IMU_UART].receiveTimeout = 100;
-//	uartBus[IMU_UART].transmitTimeout = 100;
-//	uartBus[IMU_UART].txrxType = TXRX_IT;
+	// IMU UART configuration
+	uartBus[IMU_UART].huart = &huart2;
+	uartBus[IMU_UART].rxBuffer = ImuResponseBuffer;
+	uartBus[IMU_UART].txBuffer = 0; // Buffer will be set before transmit
+	uartBus[IMU_UART].rxLength = 0; // Receive length will be set before transmit
+	uartBus[IMU_UART].txLength = 0; // Transmit length will be set before transmit
+	uartBus[IMU_UART].brokenRxTolerance = 0; // There is no special event on this bus
+	uartBus[IMU_UART].timeoutRxTolerance = 0; // There is no special event on this bus
+	uartBus[IMU_UART].receiveTimeout = 100;
+	uartBus[IMU_UART].transmitTimeout = 100;
+	uartBus[IMU_UART].txrxType = TXRX_IT;
 
 	for(uint8_t i=0; i<UART_NUMBER; i++) {
 		uartBus[i].packageReceived = false;
@@ -796,40 +797,47 @@ int16_t sign(int16_t in)
 	return 0;
 }
 
+
+// Calculates the 16-bit CRC for the given ASCII or binary message.
+unsigned short calculateCRC(unsigned char data[], unsigned int length)
+{
+unsigned int i;
+unsigned short crc = 0;
+	for(i=0; i<length; i++){
+		crc = (unsigned char)(crc >> 8) | (crc << 8); crc ^= data[i];
+		crc ^= (unsigned char)(crc & 0xff) >> 4;
+		crc ^= crc << 12;
+		crc ^= (crc & 0x00ff) << 5; }
+	return crc;
+}
+
 void ImuReceive(uint8_t *ReceiveBuf)
 {
+	 // Check sync byte
+	 if (ReceiveBuf[0] != 0xFA)
+		 return;
 
-    for(uint8_t i = 0; i < IMU_CHECKSUMS; ++i) {
-        if(!IsChecksum16bSCorrect(&ReceiveBuf[i*IMU_RESPONSE_LENGTH], IMU_RESPONSE_LENGTH)) {
-            ++uartBus[IMU_UART].brokenRxCounter;
-            return;
-        }
-    }
 
-    rSensors.rollSpeed = (float) (MergeBytes(&ReceiveBuf[GYRO_PROC_Y])) * 0.0610352;
-    rSensors.pitchSpeed = (float) (MergeBytes(&ReceiveBuf[GYRO_PROC_X])) * 0.0610352;
-    rSensors.yawSpeed = (float) (MergeBytes(&ReceiveBuf[GYRO_PROC_Z])) * 0.0610352;
+//    for(uint8_t i = 0; i < IMU_CHECKSUMS; ++i) {
+//        if(!IsChecksum16bSCorrect(&ReceiveBuf[i*IMU_RESPONSE_LENGTH], IMU_RESPONSE_LENGTH)) {
+//            ++uartBus[IMU_UART].brokenRxCounter;
+//            return;
+//        }
+//    }
 
-    rSensors.accelX = (float) (MergeBytes(&ReceiveBuf[ACCEL_PROC_X])) * 0.0109863;
-    rSensors.accelY = (float) (MergeBytes(&ReceiveBuf[ACCEL_PROC_Y])) * 0.0109863;
-    rSensors.accelZ = (float) (MergeBytes(&ReceiveBuf[ACCEL_PROC_Z])) * 0.0109863;
+  	  memcpy(&rSensors.yaw, ReceiveBuf + 12, sizeof(rSensors.yaw));
+  	  memcpy(&rSensors.pitch, ReceiveBuf + 16, sizeof(rSensors.pitch));
+  	  memcpy(&rSensors.roll, ReceiveBuf + 20, sizeof(rSensors.roll));
 
-    rSensors.magX = (float) (MergeBytes(&ReceiveBuf[MAG_PROC_X])) * 0.000183105;
-    rSensors.magY = (float) (MergeBytes(&ReceiveBuf[MAG_PROC_Y])) * 0.000183105;
-    rSensors.magZ = (float) (MergeBytes(&ReceiveBuf[MAG_PROC_Z])) * 0.000183105;
+  	  memcpy(&rSensors.accelX, ReceiveBuf + 36, sizeof(rSensors.accelX));
+  	  memcpy(&rSensors.accelY, ReceiveBuf + 40, sizeof(rSensors.accelY));
+  	  memcpy(&rSensors.accelZ, ReceiveBuf + 44, sizeof(rSensors.accelZ));
+  	  memcpy(&rSensors.crc, ReceiveBuf + 48, sizeof(rSensors.crc));
 
-    rSensors.quatA = (float) (MergeBytes(&ReceiveBuf[QUAT_A])) * 0.0000335693;
-    rSensors.quatB = (float) (MergeBytes(&ReceiveBuf[QUAT_B])) * 0.0000335693;
-    rSensors.quatC = (float) (MergeBytes(&ReceiveBuf[QUAT_C])) * 0.0000335693;
-    rSensors.quatD = (float) (MergeBytes(&ReceiveBuf[QUAT_D])) * 0.0000335693;
 
-	float diffTime = fromTickToMs(xTaskGetTickCount() - rSensors.LastTick) / 1000.0f;
+//	float diffTime = fromTickToMs(xTaskGetTickCount() - rSensors.LastTick) / 1000.0f;
     rSensors.LastTick = xTaskGetTickCount();
-    rSensors.yaw += (rSensors.yawSpeed * diffTime);
 
-    //rSensors.yaw = (float) (MergeBytes(&ReceiveBuf[EULER_PSI])) * 0.0109863;
-    rSensors.roll =  0;//asin(rSensors.accelX/62)*180/3.14;
-    rSensors.pitch =  (float) asin(rSensors.accelY/62)*180/3.14;//(float) (MergeBytes(&ReceiveBuf[EULER_PHI])) * 0.0109863;
 
     ++uartBus[IMU_UART].successRxCounter;
 }

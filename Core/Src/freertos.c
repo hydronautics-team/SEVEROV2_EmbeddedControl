@@ -381,7 +381,7 @@ void func_tImuCommTask(void *argument)
 	  		uartBus[IMU_UART].txLength = IMU_REQUEST_LENGTH;
 
 	  		uartBus[IMU_UART].rxBuffer = ImuResponseBuffer;
-	  		uartBus[IMU_UART].rxLength = IMU_RESPONSE_LENGTH*IMU_CHECKSUMS;
+	  		uartBus[IMU_UART].rxLength = IMU_RESPONSE_LENGTH;//*IMU_CHECKSUMS;
 
 	  		HAL_UART_Receive_IT(uartBus[IMU_UART].huart, uartBus[IMU_UART].rxBuffer, uartBus[IMU_UART].rxLength);
 	  		HAL_UART_Transmit_IT(uartBus[IMU_UART].huart, uartBus[IMU_UART].txBuffer, uartBus[IMU_UART].txLength);
