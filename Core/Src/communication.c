@@ -105,7 +105,7 @@ void variableInit()
 void uartBusesInit()
 {
 	// Shore UART configuration
-	uartBus[SHORE_UART].huart = &huart1; // Link to huart will be set before receiving
+	uartBus[SHORE_UART].huart = &huart3; // Link to huart will be set before receiving
 	uartBus[SHORE_UART].rxBuffer = ShoreRequestBuffer;
 	uartBus[SHORE_UART].txBuffer = ShoreResponseBuffer;
 	uartBus[SHORE_UART].rxLength = 0; // Length of the received message will be determined when first byte will be received
@@ -117,7 +117,7 @@ void uartBusesInit()
 	uartBus[SHORE_UART].txrxType = TXRX_IT;
 
 	// Thrusters UART configuration
-	uartBus[THRUSTERS_UART].huart = &huart3;
+	uartBus[THRUSTERS_UART].huart = &huart1;
 	uartBus[THRUSTERS_UART].rxBuffer = 0; // Receive bugger will be set before receive
 	uartBus[THRUSTERS_UART].txBuffer = 0; // Transmit bugger will be set before transmit
 	uartBus[THRUSTERS_UART].rxLength = 0; // Receive length will be set before transmit
@@ -129,16 +129,16 @@ void uartBusesInit()
 	uartBus[THRUSTERS_UART].txrxType = TXRX_DMA;
 
 	// Devices UART configuration
-//	uartBus[DEVICES_UART].huart = &huart4;
-//	uartBus[DEVICES_UART].rxBuffer = 0; // Receive bugger will be set before receive
-//	uartBus[DEVICES_UART].txBuffer = 0; // Transmit bugger will be set before transmit
-//	uartBus[DEVICES_UART].rxLength = DEVICES_REQUEST_LENGTH;
-//	uartBus[DEVICES_UART].txLength = DEVICES_RESPONSE_LENGTH;
-//	uartBus[DEVICES_UART].brokenRxTolerance = 0; // There is no special event on this bus
-//	uartBus[DEVICES_UART].timeoutRxTolerance = 0; // There is no special event on this bus
-//	uartBus[DEVICES_UART].receiveTimeout = 100;
-//	uartBus[DEVICES_UART].transmitTimeout = 100;
-//	uartBus[DEVICES_UART].txrxType = TXRX_DMA;
+	uartBus[DEVICES_UART].huart = &huart1;
+	uartBus[DEVICES_UART].rxBuffer = 0; // Receive bugger will be set before receive
+	uartBus[DEVICES_UART].txBuffer = 0; // Transmit bugger will be set before transmit
+	uartBus[DEVICES_UART].rxLength = DEVICES_REQUEST_LENGTH;
+	uartBus[DEVICES_UART].txLength = DEVICES_RESPONSE_LENGTH;
+	uartBus[DEVICES_UART].brokenRxTolerance = 0; // There is no special event on this bus
+	uartBus[DEVICES_UART].timeoutRxTolerance = 0; // There is no special event on this bus
+	uartBus[DEVICES_UART].receiveTimeout = 100;
+	uartBus[DEVICES_UART].transmitTimeout = 100;
+	uartBus[DEVICES_UART].txrxType = TXRX_DMA;
 
 	// IMU UART configuration
 	uartBus[IMU_UART].huart = &huart2;
@@ -814,7 +814,7 @@ unsigned short crc = 0;
 void ImuReceive(uint8_t *ReceiveBuf)
 {
 	 // Check sync byte
-	 if (ReceiveBuf[0] != 0xFA)
+	 if ((ReceiveBuf[0] != 0xFA)&&(ReceiveBuf[1] != 0x01)&&(ReceiveBuf[2] != 0x29)&&(ReceiveBuf[3] != 0x01))
 		 return;
 
 

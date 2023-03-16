@@ -15,13 +15,9 @@
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:644:19:prvGetNextExpireTime	24	static
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:670:19:prvSampleTimeNow	24	static
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:693:19:prvInsertTimerInActiveList	32	static
-../Middlewares/Third_Party/FreeRTOS/Source/timers.c:734:13:prvProcessReceivedCommands	64	static,ignoring_inline_asm
+../Middlewares/Third_Party/FreeRTOS/Source/timers.c:734:13:prvProcessReceivedCommands	56	static,ignoring_inline_asm
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:882:13:prvSwitchTimerLists	40	static,ignoring_inline_asm
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:941:13:prvCheckForValidListAndQueue	16	static
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:992:12:xTimerIsTimerActive	32	static,ignoring_inline_asm
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:1017:7:pvTimerGetTimerID	32	static,ignoring_inline_asm
 ../Middlewares/Third_Party/FreeRTOS/Source/timers.c:1034:6:vTimerSetTimerID	24	static,ignoring_inline_asm
-../Middlewares/Third_Party/FreeRTOS/Source/timers.c:1050:13:xTimerPendFunctionCallFromISR	48	static
-../Middlewares/Third_Party/FreeRTOS/Source/timers.c:1074:13:xTimerPendFunctionCall	48	static,ignoring_inline_asm
-../Middlewares/Third_Party/FreeRTOS/Source/timers.c:1103:14:uxTimerGetTimerNumber	16	static
-../Middlewares/Third_Party/FreeRTOS/Source/timers.c:1113:7:vTimerSetTimerNumber	16	static

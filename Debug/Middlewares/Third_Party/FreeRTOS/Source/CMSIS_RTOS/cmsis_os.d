@@ -1,5 +1,5 @@
-Core/Src/FreeRTOSTick.o: ../Core/Src/FreeRTOSTick.c \
- ../Core/Inc/FreeRTOSTick.h \
+Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.o: \
+ ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
@@ -17,8 +17,7 @@ Core/Src/FreeRTOSTick.o: ../Core/Src/FreeRTOSTick.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h \
- ../Core/Inc/FreeRTOSConfig.h
-../Core/Inc/FreeRTOSTick.h:
+ ../Drivers/CMSIS/Include/cmsis_gcc.h
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
@@ -36,4 +35,4 @@ Core/Src/FreeRTOSTick.o: ../Core/Src/FreeRTOSTick.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h:
-../Core/Inc/FreeRTOSConfig.h:
+../Drivers/CMSIS/Include/cmsis_gcc.h:
