@@ -93,20 +93,23 @@ void fillThrustersRequest(uint8_t *buf, uint8_t thruster)
 
     res.AA = 0xAA;
     res.type = 0x01;
-    res.address = rThrusters[thruster].address;
-    int16_t velocity = rThrusters[thruster].desiredSpeed;
+    res.address =0xAF;
+    for(int i =0;i<8;i++){
+
+
+    int16_t velocity = rThrusters[i].desiredSpeed;
 
     // Inverting
-    if(rThrusters[thruster].inverse) {
+    if(rThrusters[i].inverse) {
     	velocity *= -1;
     }
 
     // Multiplier constants
     if(velocity > 0) {
-    	velocity = (int16_t) ( (float) (velocity) * rThrusters[thruster].kForward);
+    	velocity = (int16_t) ( (float) (velocity) * rThrusters[i].kForward);
     }
     else if(velocity < 0) {
-    	velocity = (int16_t) ((float) (velocity) * rThrusters[thruster].kBackward);
+    	velocity = (int16_t) ((float) (velocity) * rThrusters[i].kBackward);
     }
 
     // Saturation
@@ -116,9 +119,12 @@ void fillThrustersRequest(uint8_t *buf, uint8_t thruster)
 //    else if(velocity < -rThrusters[thruster].sBackward) {
 //    	velocity = -rThrusters[thruster].sBackward;
 //    }
-    res.velocity = velocity;
+
+    res.velocity[i] = velocity;
+    }
 
     memcpy((void*)buf, (void*)&res, THRUSTERS_REQUEST_LENGTH);
+
     AddChecksumm8bVma(buf, THRUSTERS_REQUEST_LENGTH);
 }
 

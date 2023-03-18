@@ -60,7 +60,7 @@ struct uartBus_s {
 
 extern struct uartBus_s uartBus[UART_NUMBER];
 
-extern uint16_t counterRx; // TODO this needs to be refactored as shorestage or smth
+// TODO this needs to be refactored as shorestage or smth
 
 // Initialization of user variables
 void variableInit(void);

@@ -7,7 +7,7 @@
 #include "main.h"
 #include "tim.h"
 #include "math.h"
-#include "can.h"
+//#include "can.h"
 
 #include "communication.h"
 #include "global.h"
@@ -36,7 +36,7 @@ uint8_t VMAbrokenRxTolerance = 0;
 const uint16_t ShoreLength[SHORE_REQUEST_MODES_NUMBER] = {SHORE_REQUEST_LENGTH, REQUEST_CONFIG_LENGTH, SHORE_REQUEST_DIRECT_LENGTH};
 const uint8_t ShoreCodes[SHORE_REQUEST_MODES_NUMBER] = {SHORE_REQUEST_CODE, REQUEST_CONFIG_CODE, DIRECT_REQUEST_CODE};
 
-uint16_t counterRx = 0;
+extern uint16_t counterRx;
 
 bool i2c1PackageTransmit = false;
 bool i2c1PackageReceived = false;
@@ -129,7 +129,7 @@ void uartBusesInit()
 	uartBus[THRUSTERS_UART].txrxType = TXRX_DMA;
 
 	// Devices UART configuration
-	uartBus[DEVICES_UART].huart = &huart1;
+	uartBus[DEVICES_UART].huart = &huart4;
 	uartBus[DEVICES_UART].rxBuffer = 0; // Receive bugger will be set before receive
 	uartBus[DEVICES_UART].txBuffer = 0; // Transmit bugger will be set before transmit
 	uartBus[DEVICES_UART].rxLength = DEVICES_REQUEST_LENGTH;
@@ -357,7 +357,8 @@ void ShoreReceive()
 				counterRx = 1;
 				uartBus[SHORE_UART].rxLength = ShoreLength[i]-1;
 				HAL_UART_Receive_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].rxBuffer+1, uartBus[SHORE_UART].rxLength);
-				xTimerStartFromISR(UARTTimer, &xHigherPriorityTaskWoken);
+//				xTimerStartFromISR(UARTTimer, &xHigherPriorityTaskWoken);
+//				xTimerStart(UARTTimer,1000);
 				break;
 			}
 
@@ -370,12 +371,13 @@ void ShoreReceive()
 		uartBus[SHORE_UART].packageReceived = true;
 		uartBus[SHORE_UART].lastMessage = fromTickToMs(xTaskGetTickCount());
 		counterRx = 2;
+//		xTimerStart(UARTTimer,10);
 	}
 
-	if (xHigherPriorityTaskWoken == pdTRUE) {
-		xHigherPriorityTaskWoken = pdFALSE;
-		taskYIELD();
-	}
+//	if (xHigherPriorityTaskWoken == pdTRUE) {
+//		xHigherPriorityTaskWoken = pdFALSE;
+//		taskYIELD();
+//	}
 }
 
 void DevicesRequestUpdate(uint8_t *buf, uint8_t dev)

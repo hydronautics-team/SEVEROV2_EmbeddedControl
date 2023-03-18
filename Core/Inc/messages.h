@@ -9,7 +9,7 @@
 #define THRUSTERS_NUMBER             		8
 
 /// Request length for normal thrusters polling message (request from master)
-#define THRUSTERS_REQUEST_LENGTH   			5
+#define THRUSTERS_REQUEST_LENGTH   			13
 /// Request length for configation thrusters polling message (request from master)
 #define THRUSTERS_CONFIG_REQUEST_LENGTH  	13
 /// Response length for all thrusters answer message (response to master)
@@ -29,7 +29,8 @@ struct thrustersRequest_s
 	uint8_t AA;
 	uint8_t type; // 0x01
 	uint8_t address;
-	int8_t velocity;
+	int8_t 	velocity[8];
+	int8_t 	pwm_servo;
 	uint8_t crc;
 };
 

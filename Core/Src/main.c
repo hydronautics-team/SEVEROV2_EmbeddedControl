@@ -19,7 +19,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "cmsis_os.h"
-#include "can.h"
 #include "dma.h"
 #include "i2c.h"
 #include "tim.h"
@@ -97,21 +96,21 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_CAN1_Init();
   MX_USART1_UART_Init();
   MX_USART3_UART_Init();
   MX_I2C1_Init();
   MX_TIM7_Init();
   MX_USART2_UART_Init();
+  MX_UART4_Init();
   /* USER CODE BEGIN 2 */
-  	HAL_GPIO_WritePin(GPIOB, led1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, led2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, led3_Pin, GPIO_PIN_SET);
-	HAL_Delay(1500);
-	HAL_GPIO_WritePin(GPIOB, led1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, led2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, led3_Pin, GPIO_PIN_RESET);
-	HAL_Delay(500);
+//  	HAL_GPIO_WritePin(GPIOB, led1_Pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin(GPIOB, led2_Pin, GPIO_PIN_SET);
+//	HAL_GPIO_WritePin(GPIOB, led3_Pin, GPIO_PIN_SET);
+//	HAL_Delay(1500);
+//	HAL_GPIO_WritePin(GPIOB, led1_Pin, GPIO_PIN_RESET);
+//	HAL_GPIO_WritePin(GPIOB, led2_Pin, GPIO_PIN_RESET);
+//	HAL_GPIO_WritePin(GPIOB, led3_Pin, GPIO_PIN_RESET);
+//	HAL_Delay(500);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -131,9 +130,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-//	  uint8_t a[3] ={0xaa,0xff,0xaa};
-// HAL_UART_Transmit(&huart2,a,sizeof(a),100);
-// HAL_Delay(100);
+
     /* USER CODE BEGIN 3 */
 	//	HAL_UART_Transmit(&huart2,buf,sizeof(buf),100);
 	//	HAL_Delay(300);
@@ -141,11 +138,6 @@ int main(void)
   }
   /* USER CODE END 3 */
 }
-
-
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-//    __NOP();
-//}
 
 /**
   * @brief System Clock Configuration
