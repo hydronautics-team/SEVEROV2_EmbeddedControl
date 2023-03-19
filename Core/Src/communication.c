@@ -349,15 +349,16 @@ void SensorsResponseUpdate(uint8_t *buf, uint8_t Sensor_id)
 
 void ShoreReceive()
 {
-	static portBASE_TYPE xHigherPriorityTaskWoken;
-	xHigherPriorityTaskWoken = pdFALSE;
+	static portBASE_TYPE xHigherPriorityTaskWoken1;
+	xHigherPriorityTaskWoken1 = pdFALSE;
 	if(counterRx == 0) {
 		for(uint8_t i=0; i<SHORE_REQUEST_MODES_NUMBER; ++i) {
 			if(uartBus[SHORE_UART].rxBuffer[0] == ShoreCodes[i]) {
 				counterRx = 1;
 				uartBus[SHORE_UART].rxLength = ShoreLength[i]-1;
 				HAL_UART_Receive_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].rxBuffer+1, uartBus[SHORE_UART].rxLength);
-//				xTimerStartFromISR(UARTTimer, &xHigherPriorityTaskWoken);
+
+				//xTimerStartFromISR(UARTTimer, NULL);
 //				xTimerStart(UARTTimer,1000);
 				break;
 			}
@@ -370,13 +371,18 @@ void ShoreReceive()
 	else if(counterRx == 1) {
 		uartBus[SHORE_UART].packageReceived = true;
 		uartBus[SHORE_UART].lastMessage = fromTickToMs(xTaskGetTickCount());
-		counterRx = 2;
+		ShoreRequest(uartBus[SHORE_UART].rxBuffer);
+		ShoreResponse(uartBus[SHORE_UART].txBuffer);
+		uartBus[SHORE_UART].txLength = SHORE_RESPONSE_LENGTH;
+		HAL_UART_Transmit_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].txBuffer, uartBus[SHORE_UART].txLength);
+		counterRx = 0;
+		HAL_UART_Receive_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].rxBuffer, 1);
 //		xTimerStart(UARTTimer,10);
 	}
 
 //	if (xHigherPriorityTaskWoken == pdTRUE) {
 //		xHigherPriorityTaskWoken = pdFALSE;
-//		taskYIELD();
+		taskYIELD();
 //	}
 }
 

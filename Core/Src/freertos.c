@@ -204,23 +204,23 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the timer(s) */
   /* definition and creation of tUartTimer */
-  osTimerDef(tUartTimer, func_tUartTimer);
-  tUartTimerHandle = osTimerCreate(osTimer(tUartTimer), osTimerPeriodic, NULL);
+//  osTimerDef(tUartTimer, func_tUartTimer);
+//  tUartTimerHandle = osTimerCreate(osTimer(tUartTimer), osTimerPeriodic, NULL);
 
   /* definition and creation of tSilence */
-  osTimerDef(tSilence, tSilence_func);
-  tSilenceHandle = osTimerCreate(osTimer(tSilence), osTimerOnce, NULL);
+//  osTimerDef(tSilence, tSilence_func);
+//  tSilenceHandle = osTimerCreate(osTimer(tSilence), osTimerOnce, NULL);
 
   /* definition and creation of tTechCommTImer */
-  osTimerDef(tTechCommTImer, tTechCommTImer_callback);
-  tTechCommTImerHandle = osTimerCreate(osTimer(tTechCommTImer), osTimerOnce, NULL);
+//  osTimerDef(tTechCommTImer, tTechCommTImer_callback);
+//  tTechCommTImerHandle = osTimerCreate(osTimer(tTechCommTImer), osTimerOnce, NULL);
 
   /* USER CODE BEGIN RTOS_TIMERS */
-  SilenceTimer = xTimerCreate("silence", DELAY_SILENCE/portTICK_RATE_MS, pdFALSE, 0, (TimerCallbackFunction_t) tSilence_func);
-  UARTTimer = xTimerCreate("timer", DELAY_TIMER_TASK/portTICK_RATE_MS, pdFALSE, 0, (TimerCallbackFunction_t) func_tUartTimer);
+//  SilenceTimer = xTimerCreate("silence", DELAY_SILENCE/portTICK_RATE_MS, pdFALSE, 0, (TimerCallbackFunction_t) tSilence_func);
+ // UARTTimer = xTimerCreate("timer", DELAY_TIMER_TASK/portTICK_RATE_MS, pdFALSE, 0, (TimerCallbackFunction_t) func_tUartTimer);
 
-  xTimerStart(SilenceTimer, 10);
-  xTimerStart(UARTTimer,10);
+//  xTimerStart(SilenceTimer, 10);
+//  xTimerStart(UARTTimer,10);
 
   /* USER CODE END RTOS_TIMERS */
 
@@ -230,8 +230,8 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadStaticDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 128, defaultTaskBuffer, &defaultTaskControlBlock);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+//  osThreadStaticDef(defaultTask, StartDefaultTask, osPriorityIdle, 0, 128, defaultTaskBuffer, &defaultTaskControlBlock);
+//  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of tLedBlinkingTask */
   osThreadStaticDef(tLedBlinkingTask, func_tLedBlinkingTask, osPriorityLow, 0, 128, tLedBlinkingTaskBuffer, &tLedBlinkingTaskControlBlock);
@@ -250,12 +250,12 @@ void MX_FREERTOS_Init(void) {
   tStabilizationTaskHandle = osThreadCreate(osThread(tStabilizationTask), NULL);
 
   /* definition and creation of tDevCommTask */
-  osThreadStaticDef(tDevCommTask, func_tDevCommTask, osPriorityBelowNormal, 0, 128, tDevCommTaskBuffer, &tDevCommTaskControlBlock);
-  tDevCommTaskHandle = osThreadCreate(osThread(tDevCommTask), NULL);
+//  osThreadStaticDef(tDevCommTask, func_tDevCommTask, osPriorityBelowNormal, 0, 128, tDevCommTaskBuffer, &tDevCommTaskControlBlock);
+//  tDevCommTaskHandle = osThreadCreate(osThread(tDevCommTask), NULL);
 
   /* definition and creation of tSensCommTask */
-  osThreadStaticDef(tSensCommTask, func_tSensCommTask, osPriorityBelowNormal, 0, 128, tSensCommTaskBuffer, &tSensCommTaskControlBlock);
-  tSensCommTaskHandle = osThreadCreate(osThread(tSensCommTask), NULL);
+//  osThreadStaticDef(tSensCommTask, func_tSensCommTask, osPriorityBelowNormal, 0, 128, tSensCommTaskBuffer, &tSensCommTaskControlBlock);
+//  tSensCommTaskHandle = osThreadCreate(osThread(tSensCommTask), NULL);
 
   /* definition and creation of tPcCommTask */
   osThreadStaticDef(tPcCommTask, func_tPcCommTask, osPriorityBelowNormal, 0, 128, tPcCommTaskBuffer, &tPcCommTaskControlBlock);
@@ -557,7 +557,7 @@ void func_tUartTimer(void const * argument)
 		}
 //	}
 	//HAL_GPIO_WritePin(GPIOE, RES_PC_2_Pin, GPIO_PIN_SET); // ONOFF
-	xTimerStart(SilenceTimer, 50);
+	//xTimerStart(SilenceTimer, 50);
   /* USER CODE END tSilence_func */
 //	xTimerStart(UARTTimer,10);
   /* USER CODE END func_tUartTimer */
@@ -572,6 +572,7 @@ void tSilence_func(void const * argument)
 			if(xSemaphoreTake(mutDataHandle, (TickType_t) WAITING_TIMER) == pdTRUE) {
 				switch(uartBus[SHORE_UART].rxBuffer[0]) {
 					case SHORE_REQUEST_CODE:
+
 						ShoreRequest(uartBus[SHORE_UART].rxBuffer);
 						ShoreResponse(uartBus[SHORE_UART].txBuffer);
 						uartBus[SHORE_UART].txLength = SHORE_RESPONSE_LENGTH;
@@ -602,7 +603,7 @@ void tSilence_func(void const * argument)
 		uartBus[SHORE_UART].packageReceived = false;
 		HAL_UART_AbortReceive_IT(uartBus[SHORE_UART].huart);
 		HAL_UART_Receive_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].rxBuffer, 1);
-		xTimerStart(SilenceTimer, 50);
+		xTimerStart(SilenceTimer, 10);
 }
 
 /* tTechCommTImer_callback function */
