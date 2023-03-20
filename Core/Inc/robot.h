@@ -8,26 +8,16 @@
 #include "messages.h"
 
 enum VMA {
-	MarshLEFT = 0,
-    MarshRIGHT,
-    VertLEFT,
-    VertRIGHT,
-    VertBACK,
-	Lag1st,
-    Lag2nd,
-	MarshDown
-};
+    FDR = 0,
+    FDL,
+    BDR,
+	BDL,
+  	FUR,
+    FUL,
+	BUL,
+	BUR
 
-//enum VMA {
-//	HML = 0, 	// Horizontal march left
-//	HMR,		// Horizontal march right
-//	HLB,		// Horizontal lag back
-//	HLF,		// Horizontal lag front
-//	VL,			// Vertical left
-//	VR,			// Vertical right
-//	VB,			// Vertical back
-//	VF			// Vertical front
-//};
+};
 
 #define DEV_AMOUNT 6
 
@@ -148,7 +138,6 @@ struct robotSensors_s {
 
 	float leak;
 };
-
 struct robotPc_s {
 	uint8_t reset;
 	uint8_t errors;
@@ -245,31 +234,6 @@ struct robotStabilizationState_s {
 
 	float LastTick;
 };
-
-typedef struct {
-    uint8_t sync;
-    uint8_t group;
-    uint16_t group_1_fields;
-} header_VN;
-
-typedef struct{
-	header_VN header;
-    uint64_t TimeStartup;
-    float yaw;
-    float pitch;
-    float roll;
-    float X_rate;
-    float Y_rate;
-    float Z_rate;
-    float X_accel;
-    float Y_accel;
-    float Z_accel;
-
-    union {
-        unsigned short crc;
-        uint8_t temp[2];
-    } crc;
-} DataFromVectorNav;
 
 
 #endif

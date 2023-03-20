@@ -7,7 +7,6 @@
 #include "main.h"
 #include "tim.h"
 #include "math.h"
-//#include "can.h"
 
 #include "communication.h"
 #include "global.h"
@@ -17,7 +16,6 @@
 #include "stabilization.h"
 #include "flash.h"
 #include "thrusters.h"
-#include "timers.h"
 
 #define PACKAGE_TOLLERANCE 	20
 #define THRUSTER_FILTERS_NUMBER 2
@@ -36,11 +34,13 @@ uint8_t VMAbrokenRxTolerance = 0;
 const uint16_t ShoreLength[SHORE_REQUEST_MODES_NUMBER] = {SHORE_REQUEST_LENGTH, REQUEST_CONFIG_LENGTH, SHORE_REQUEST_DIRECT_LENGTH};
 const uint8_t ShoreCodes[SHORE_REQUEST_MODES_NUMBER] = {SHORE_REQUEST_CODE, REQUEST_CONFIG_CODE, DIRECT_REQUEST_CODE};
 
-extern uint16_t counterRx;
+uint16_t counterRx = 0;
 
 bool i2c1PackageTransmit = false;
-bool i2c1PackageReceived = false;
+bool i2c2PackageTransmit = false;
 
+bool i2c1PackageReceived = false;
+bool i2c2PackageReceived = false;
 
 void variableInit()
 {
@@ -349,17 +349,15 @@ void SensorsResponseUpdate(uint8_t *buf, uint8_t Sensor_id)
 
 void ShoreReceive()
 {
-	static portBASE_TYPE xHigherPriorityTaskWoken1;
-	xHigherPriorityTaskWoken1 = pdFALSE;
+	static portBASE_TYPE xHigherPriorityTaskWoken;
+	xHigherPriorityTaskWoken = pdFALSE;
 	if(counterRx == 0) {
 		for(uint8_t i=0; i<SHORE_REQUEST_MODES_NUMBER; ++i) {
 			if(uartBus[SHORE_UART].rxBuffer[0] == ShoreCodes[i]) {
 				counterRx = 1;
 				uartBus[SHORE_UART].rxLength = ShoreLength[i]-1;
 				HAL_UART_Receive_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].rxBuffer+1, uartBus[SHORE_UART].rxLength);
-
-				//xTimerStartFromISR(UARTTimer, NULL);
-//				xTimerStart(UARTTimer,1000);
+				xTimerStartFromISR(UARTTimer, &xHigherPriorityTaskWoken);
 				break;
 			}
 
@@ -371,19 +369,13 @@ void ShoreReceive()
 	else if(counterRx == 1) {
 		uartBus[SHORE_UART].packageReceived = true;
 		uartBus[SHORE_UART].lastMessage = fromTickToMs(xTaskGetTickCount());
-		ShoreRequest(uartBus[SHORE_UART].rxBuffer);
-		ShoreResponse(uartBus[SHORE_UART].txBuffer);
-		uartBus[SHORE_UART].txLength = SHORE_RESPONSE_LENGTH;
-		HAL_UART_Transmit_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].txBuffer, uartBus[SHORE_UART].txLength);
-		counterRx = 0;
-		HAL_UART_Receive_IT(uartBus[SHORE_UART].huart, uartBus[SHORE_UART].rxBuffer, 1);
-//		xTimerStart(UARTTimer,10);
+		counterRx = 2;
 	}
 
-//	if (xHigherPriorityTaskWoken == pdTRUE) {
-//		xHigherPriorityTaskWoken = pdFALSE;
+	if (xHigherPriorityTaskWoken == pdTRUE) {
+		xHigherPriorityTaskWoken = pdFALSE;
 		taskYIELD();
-//	}
+	}
 }
 
 void DevicesRequestUpdate(uint8_t *buf, uint8_t dev)
@@ -514,12 +506,12 @@ void ShoreRequest(uint8_t *requestBuf)
         uint8_t old_reset = rComputer.reset;
         if(old_reset != req.pc_reset) {
             if(req.pc_reset == PC_ON_CODE) {
-          //  	HAL_GPIO_WritePin(PC_CONTROL1_GPIO_Port, PC_CONTROL1_Pin, GPIO_PIN_RESET); // RESET
-          //  	HAL_GPIO_WritePin(PC_CONTROL2_GPIO_Port, PC_CONTROL2_Pin, GPIO_PIN_RESET); // ONOFF
+//            	HAL_GPIO_WritePin(PC_CONTROL1_GPIO_Port, PC_CONTROL1_Pin, GPIO_PIN_RESET); // RESET
+//            	HAL_GPIO_WritePin(PC_CONTROL2_GPIO_Port, PC_CONTROL2_Pin, GPIO_PIN_RESET); // ONOFF
             }
             else if(req.pc_reset == PC_OFF_CODE) {
-           // 	HAL_GPIO_WritePin(PC_CONTROL1_GPIO_Port, PC_CONTROL1_Pin, GPIO_PIN_SET); // RESET
-           //	HAL_GPIO_WritePin(PC_CONTROL2_GPIO_Port, PC_CONTROL2_Pin, GPIO_PIN_SET); // ONOFF
+//            	HAL_GPIO_WritePin(PC_CONTROL1_GPIO_Port, PC_CONTROL1_Pin, GPIO_PIN_SET); // RESET
+//            	HAL_GPIO_WritePin(PC_CONTROL2_GPIO_Port, PC_CONTROL2_Pin, GPIO_PIN_SET); // ONOFF
             }
         }
         rComputer.reset = req.pc_reset;
@@ -571,30 +563,30 @@ void ShoreRequest(uint8_t *requestBuf)
 //        	}
 //        }
 
-//        if(tempCameraNum != rState.cameraNum) {
-//        	rState.cameraNum = tempCameraNum;
-//        	switch(rState.cameraNum) {
-//        	case 0:
+        if(tempCameraNum != rState.cameraNum) {
+        	rState.cameraNum = tempCameraNum;
+        	switch(rState.cameraNum) {
+        	case 0:
 //        		HAL_GPIO_WritePin(GPIOA, CAM1_Pin, GPIO_PIN_RESET);
 //        		HAL_GPIO_WritePin(GPIOA, CAM2_Pin, GPIO_PIN_RESET);
-//        		break;
-//
-//        	case 1:
+        		break;
+
+        	case 1:
 //        		HAL_GPIO_WritePin(GPIOA, CAM1_Pin, GPIO_PIN_SET);
 //        		HAL_GPIO_WritePin(GPIOA, CAM2_Pin, GPIO_PIN_RESET);
-//        		break;
-//
-//        	case 2:
+        		break;
+
+        	case 2:
 //        		HAL_GPIO_WritePin(GPIOA, CAM1_Pin, GPIO_PIN_RESET);
 //        		HAL_GPIO_WritePin(GPIOA, CAM2_Pin, GPIO_PIN_SET);
-//        		break;
-//
-//        	case 3:
+        		break;
+
+        	case 3:
 //        		HAL_GPIO_WritePin(GPIOA, CAM1_Pin, GPIO_PIN_SET);
 //        		HAL_GPIO_WritePin(GPIOA, CAM2_Pin, GPIO_PIN_SET);
-//        		break;
-//        	}
-//        }
+        		break;
+        	}
+        }
 
         // TODO tuuuupoooo
         formThrustVectors();
@@ -613,18 +605,15 @@ void ShoreRequest(uint8_t *requestBuf)
         	robot->i_joySpeed.pitch = 0;
         	robot->i_joySpeed.roll = 0;
         	robot->i_joySpeed.yaw = 0;
-
         	robot->device[LIGHT].force = 0;
         	robot->device[DEV1].force = 0;
         	robot->device[DEV2].force = 0;
         	robot->device[GRAB].force = 0;
         	robot->device[GRAB_ROTATION].force  = 0;
         	robot->device[TILT].force = 0;
-
         	for (uint8_t i = 0; i < THRUSTERS_NUMBER; ++i){
         		robot->thrusters[i].desiredSpeed = 0;
         	}
-
         	brokenRxTolerance = 0;
         }
         */
@@ -805,33 +794,12 @@ int16_t sign(int16_t in)
 	return 0;
 }
 
-
-// Calculates the 16-bit CRC for the given ASCII or binary message.
-unsigned short calculateCRC(unsigned char data[], unsigned int length)
-{
-unsigned int i;
-unsigned short crc = 0;
-	for(i=0; i<length; i++){
-		crc = (unsigned char)(crc >> 8) | (crc << 8); crc ^= data[i];
-		crc ^= (unsigned char)(crc & 0xff) >> 4;
-		crc ^= crc << 12;
-		crc ^= (crc & 0x00ff) << 5; }
-	return crc;
-}
-
 void ImuReceive(uint8_t *ReceiveBuf)
 {
 	 // Check sync byte
 	 if ((ReceiveBuf[0] != 0xFA)&&(ReceiveBuf[1] != 0x01)&&(ReceiveBuf[2] != 0x29)&&(ReceiveBuf[3] != 0x01))
 		 return;
 
-
-//    for(uint8_t i = 0; i < IMU_CHECKSUMS; ++i) {
-//        if(!IsChecksum16bSCorrect(&ReceiveBuf[i*IMU_RESPONSE_LENGTH], IMU_RESPONSE_LENGTH)) {
-//            ++uartBus[IMU_UART].brokenRxCounter;
-//            return;
-//        }
-//    }
 
   	  memcpy(&rSensors.yaw, ReceiveBuf + 12, sizeof(rSensors.yaw));
   	  memcpy(&rSensors.pitch, ReceiveBuf + 16, sizeof(rSensors.pitch));
@@ -843,7 +811,6 @@ void ImuReceive(uint8_t *ReceiveBuf)
   	  memcpy(&rSensors.crc, ReceiveBuf + 48, sizeof(rSensors.crc));
 
 
-//	float diffTime = fromTickToMs(xTaskGetTickCount() - rSensors.LastTick) / 1000.0f;
     rSensors.LastTick = xTaskGetTickCount();
 
 

@@ -60,11 +60,6 @@ void MX_FREERTOS_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-
-
-
-
-
 /* USER CODE END 0 */
 
 /**
@@ -96,21 +91,14 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
-  MX_USART3_UART_Init();
   MX_I2C1_Init();
-  MX_TIM7_Init();
-  MX_USART2_UART_Init();
   MX_UART4_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-//  	HAL_GPIO_WritePin(GPIOB, led1_Pin, GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(GPIOB, led2_Pin, GPIO_PIN_SET);
-//	HAL_GPIO_WritePin(GPIOB, led3_Pin, GPIO_PIN_SET);
-//	HAL_Delay(1500);
-//	HAL_GPIO_WritePin(GPIOB, led1_Pin, GPIO_PIN_RESET);
-//	HAL_GPIO_WritePin(GPIOB, led2_Pin, GPIO_PIN_RESET);
-//	HAL_GPIO_WritePin(GPIOB, led3_Pin, GPIO_PIN_RESET);
-//	HAL_Delay(500);
+  HAL_Delay(60e3);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
@@ -122,19 +110,11 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	//uint8_t buf[31]="$VNWRG,75,2,10,01,0129*XX\r\n";
-	//uint8_t recbuf[10] ={0};
-//	HAL_UART_Receive_IT(&huart2,recbuf, sizeof(buf));
-//	HAL_UART_Transmit_IT(&huart2,buf,sizeof(buf));
-
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	//	HAL_UART_Transmit(&huart2,buf,sizeof(buf),100);
-	//	HAL_Delay(300);
-	//	HAL_UART_Receive(&huart2,recbuf, sizeof(buf),100);
   }
   /* USER CODE END 3 */
 }
@@ -162,7 +142,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
   RCC_OscInitStruct.PLL.PLLM = 8;
-  RCC_OscInitStruct.PLL.PLLN = 72;
+  RCC_OscInitStruct.PLL.PLLN = 75;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -191,7 +171,7 @@ void SystemClock_Config(void)
 
 /**
   * @brief  Period elapsed callback in non blocking mode
-  * @note   This function is called  when TIM2 interrupt took place, inside
+  * @note   This function is called  when TIM1 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
   * a global variable "uwTick" used as application time base.
   * @param  htim : TIM handle
@@ -202,7 +182,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM2) {
+  if (htim->Instance == TIM1) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */

@@ -5,7 +5,7 @@
 
 #include "robot.h"
 
-#define UART_NUMBER 3
+#define UART_NUMBER 4
 
 enum {
 	SHORE_UART = 0,
@@ -60,7 +60,7 @@ struct uartBus_s {
 
 extern struct uartBus_s uartBus[UART_NUMBER];
 
-// TODO this needs to be refactored as shorestage or smth
+extern uint16_t counterRx; // TODO this needs to be refactored as shorestage or smth
 
 // Initialization of user variables
 void variableInit(void);

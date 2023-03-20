@@ -271,4 +271,3 @@ void stabilizationUpdate(uint8_t contour)
 
     state->outputSignal = -1*state->speedError;
 }
-

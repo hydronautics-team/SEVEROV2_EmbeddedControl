@@ -29,8 +29,8 @@ struct thrustersRequest_s
 	uint8_t AA;
 	uint8_t type; // 0x01
 	uint8_t address;
-	int8_t 	velocity[8];
-	int8_t 	pwm_servo;
+	int8_t velocity[8];
+	int8_t pwm_servo;
 	uint8_t crc;
 };
 
