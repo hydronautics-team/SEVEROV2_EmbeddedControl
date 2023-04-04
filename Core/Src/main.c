@@ -24,6 +24,8 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "thrusters.h"
+#include "communication.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -98,14 +100,48 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM7_Init();
   /* USER CODE BEGIN 2 */
-  HAL_Delay(60e3);
+  //HAL_Delay(10e3);
+  uint8_t transaction = 0;
+  uint8_t ThrustersRequestBuffer0[] = {0xAA, 0x1, 0xAF, 0x00, 0x00, 0x00, 0x00, 0x0, 0x0, 0x0, 0x0, 0x0, 0xae};
+  uint8_t ThrustersRequestBuffer1[] = {0xAA, 0x1, 0xAF, 0xb, 0xf0, 0xb, 0xf0, 0x10, 0xf0, 0xb, 0x10, 0x0, 0x55};
+
+  uint8_t ThrustersRequestBuffer2[] =  {0xAA, 0x1, 0xAF, 0x17, 0xdd, 0xf1, 0x17, 0xe9, 0x17, 0x17, 0x23, 0x0, 0x48};
+  uint8_t ThrustersRequestBuffer3[] = {0xAA, 0x1, 0xAF, 0xd, 0x14, 0xf3, 0xec, 0xec, 0xec, 0xf3, 0x14, 0x0, 0x4f};
+ // uint8_t ThrustersRequestBuffer4[] = {0xAA, 0x1, 0xAF, 0xb, 0xf0, 0xb, 0xf0, 0x10, 0xf0, 0xb, 0x10, 0x0, 0x55};
+  uint8_t ThrustersResponseBuffer[THRUSTERS_NUMBER][THRUSTERS_RESPONSE_LENGTH];
+  HAL_GPIO_WritePin(RE_DE_GPIO_Port,RE_DE_Pin,GPIO_PIN_SET);
+
+  //HAL_UART_Receive_(&huart1, ThrustersResponseBuffer[transaction], THRUSTERS_RESPONSE_LENGTH);
+  HAL_UART_Transmit(&huart1, ThrustersRequestBuffer0, THRUSTERS_REQUEST_LENGTH,100);
+  HAL_Delay(6000);
+
+  HAL_UART_Transmit(&huart1, ThrustersRequestBuffer1, THRUSTERS_REQUEST_LENGTH,100);
+
+  HAL_Delay(14000);
+
+  HAL_UART_Transmit(&huart1, ThrustersRequestBuffer0, THRUSTERS_REQUEST_LENGTH,100);
+
+  HAL_Delay(1000);
+
+  HAL_UART_Transmit(&huart1, ThrustersRequestBuffer2, THRUSTERS_REQUEST_LENGTH,100);
+
+  HAL_Delay(10000);
+
+  HAL_UART_Transmit(&huart1, ThrustersRequestBuffer3, THRUSTERS_REQUEST_LENGTH,100);
+  HAL_Delay(300);
+
+  HAL_UART_Transmit(&huart1, ThrustersRequestBuffer2, THRUSTERS_REQUEST_LENGTH,100);
+
+  HAL_Delay(10000);
+
+ // HAL_Delay(5000);
   /* USER CODE END 2 */
 
   /* Call init function for freertos objects (in freertos.c) */
-  MX_FREERTOS_Init();
+//  MX_FREERTOS_Init();
 
   /* Start scheduler */
-  osKernelStart();
+//  osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -113,6 +149,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
 
     /* USER CODE BEGIN 3 */
   }

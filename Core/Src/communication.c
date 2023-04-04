@@ -240,7 +240,7 @@ bool transmitAndReceive(struct uartBus_s *bus, bool isrMode)
 		if(fromTickToMs(xTaskGetTickCount()) - bus->timeoutCounter > bus->transmitTimeout) {
 			return false;
 		}
-		osDelay(DELAY_UART_TIMEOUT);
+		//osDelay(DELAY_UART_TIMEOUT);
 	}
 	return true;
 }

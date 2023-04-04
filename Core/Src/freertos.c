@@ -239,8 +239,8 @@ void MX_FREERTOS_Init(void) {
   tDevCommTaskHandle = osThreadCreate(osThread(tDevCommTask), NULL);
 
   /* definition and creation of tSensCommTask */
- // osThreadStaticDef(tSensCommTask, func_tSensCommTask, osPriorityBelowNormal, 0, 128, tSensCommTaskBuffer, &tSensCommTaskControlBlock);
- // tSensCommTaskHandle = osThreadCreate(osThread(tSensCommTask), NULL);
+//  osThreadStaticDef(tSensCommTask, func_tSensCommTask, osPriorityBelowNormal, 0, 128, tSensCommTaskBuffer, &tSensCommTaskControlBlock);
+//  tSensCommTaskHandle = osThreadCreate(osThread(tSensCommTask), NULL);
 
   /* definition and creation of tPcCommTask */
   osThreadStaticDef(tPcCommTask, func_tPcCommTask, osPriorityLow, 0, 128, tPcCommTaskBuffer, &tPcCommTaskControlBlock);

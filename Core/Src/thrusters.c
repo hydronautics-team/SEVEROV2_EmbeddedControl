@@ -18,16 +18,15 @@ void addPitchToSumm(float *velocity);
 
 uint8_t resizeFloatToUint8(float input);
 
-
 float KVMA[8][7] = {
-    {-0.2041149, -0.25000000, 0.35350677, 1.00000000, -0.0061806, 1.0000000, -1.00000000},
-    {-0.2041149, 0.25000000, 0.3535067, -1.0000000, -0.0061806,  -1.00000000, 1.00000000},
-    {0.2041149, -0.25000000, 0.3535067, -1.0000000, -0.0061806, -1.0000000, 1.00000000},
-    {0.2041149, 0.2500000, 0.35350677, 1.00000000, -0.0061806, 1.00000000, 1.00000000},
-    {-0.20411496, -0.2500000, -0.35350677, 1.00000000, -0.0061806, 1.00000000, 1.00000000},
-    {-0.20411496, 0.25000000, -0.3535067, -1.0000000, -0.0061806, -1.0000000, -1.00000000},
-    {0.2041149, 0.25000000, -0.35350677, 1.00000000, 0.00618065, 1.0000000, 1.00000000},
-    {0.20411496, -0.25000000, -0.3535067, -1.0000000, -0.0061806, -1.00000000,  1.00000000}
+    {-0.4041149, -0.25000000, -0.35350677, 1.00000000, 0.3, 1.0000000, -1.00000000},
+    {-0.4041149, 0.25000000, -0.3535067, -1.0000000, 0.3,  -1.00000000, 1.500000000},
+    {-0.4041149, 0.25000000, 0.3535067, -1.0000000, 0.3, 1.0000000, 1.00000000},
+    {0.4041149, 0.2500000, -0.35350677, 1.00000000, -0.3, 1.00000000, 1.500000000},
+    {-0.40411496, -0.2500000, 0.35350677, 1.00000000, -0.3, 1.00000000, 1.50000000},
+    {-0.40411496, 0.25000000, 0.3535067, -1.0000000, -0.3, -1.0000000, -1.50000000},
+    {0.4041149, 0.25000000, 0.35350677, 1.00000000, 0.3, 1.0000000, 1.00000000},
+    {0.40411496, -0.25000000, 0.3535067, -1.0000000, 0.3, -1.00000000,  1.50000000}
 };
 
 void thrustersInit()
@@ -45,14 +44,13 @@ void thrustersInit()
 
   for(uint8_t i=0; i<THRUSTERS_NUMBER; i++) {
     rThrusters[i].desiredSpeed = 0;
-    rThrusters[i].kForward = 1;
-    rThrusters[i].kBackward =1;
+    rThrusters[i].kForward = 0.7;
+    rThrusters[i].kBackward = 0.7;
     rThrusters[i].sForward = 127;
     rThrusters[i].sBackward = 127;
   }
 
 }
-
 
 void resetThrusters()
 {
@@ -82,7 +80,7 @@ void fillThrustersRequest(uint8_t *buf, uint8_t thruster)
 
     	// Inverting
     	if(rThrusters[i].inverse) {
-    		velocity *= -1;
+//    		velocity *= -1;
     	}
 
     	// Multiplier constants
@@ -95,7 +93,7 @@ void fillThrustersRequest(uint8_t *buf, uint8_t thruster)
 
     	res.velocity[i] = velocity;
     }
-
+    res.pwm_servo = rDevice[GRAB].force;
     memcpy((void*)buf, (void*)&res, THRUSTERS_REQUEST_LENGTH);
     AddChecksumm8bVma(buf, THRUSTERS_REQUEST_LENGTH);
 }
@@ -130,12 +128,12 @@ void formThrustVectors()
   float Uteta;
   float Upsi;
 
-  Ux = rStabConstants[STAB_MARCH].enable ?  rStabState[STAB_MARCH].outputSignal : rJoySpeed.march;
-  Uy = rStabConstants[STAB_LAG].enable ?   rStabState[STAB_LAG].outputSignal : rJoySpeed.lag;
-  Uz = rStabConstants[STAB_DEPTH].enable ?  rStabState[STAB_DEPTH].outputSignal : rJoySpeed.depth;
-  Upsi =  rStabConstants[STAB_YAW].enable ?   rStabState[STAB_YAW].outputSignal :  rJoySpeed.yaw;
-  Ugamma =rStabConstants[STAB_ROLL].enable ?   rStabState[STAB_ROLL].outputSignal : rJoySpeed.roll;
-  Uteta = rStabConstants[STAB_PITCH].enable ?   rStabState[STAB_PITCH].outputSignal :  rJoySpeed.pitch;
+  Ux = rJoySpeed.march;
+  Uy = rJoySpeed.lag;
+  Uz = rJoySpeed.depth;
+  Upsi = rJoySpeed.yaw;
+  Ugamma = rJoySpeed.roll;
+  Uteta = rJoySpeed.pitch;
 
   for (uint8_t i = 0; i < THRUSTERS_NUMBER; ++i)
   {
@@ -145,7 +143,6 @@ void formThrustVectors()
   }
 
 }
-
 
 uint8_t resizeFloatToUint8(float input)
 {
