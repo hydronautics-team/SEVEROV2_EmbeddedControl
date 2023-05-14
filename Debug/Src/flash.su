@@ -1,0 +1,5 @@
+../Src/flash.c:5:6:flashErase	24	static
+../Src/flash.c:19:6:flashReadSettings	32	static
+../Src/flash.c:31:6:flashWriteSettings	56	static
+../Src/flash.c:57:6:flashFillStructure	24	static
+../Src/flash.c:91:6:flashReadStructure	24	static

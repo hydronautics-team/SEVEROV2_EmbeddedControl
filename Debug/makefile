@@ -9,13 +9,13 @@ RM := rm -rf
 
 # All of the sources participating in the build are defined here
 -include sources.mk
+-include Startup/subdir.mk
+-include Src/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/subdir.mk
 -include Middlewares/Third_Party/FreeRTOS/Source/subdir.mk
--include Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk
--include Core/Startup/subdir.mk
--include Core/Src/subdir.mk
+-include Drivers/STM32F3xx_HAL_Driver/Src/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -38,34 +38,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := Severov_Right_Version copy
+BUILD_ARTIFACT_NAME := EmbeddedControl
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-Severov_Right_Version\ copy.elf \
+EmbeddedControl.elf \
 
 MAP_FILES += \
-Severov_Right_Version\ copy.map \
+EmbeddedControl.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-Severov_Right_Version\ copy.list \
+EmbeddedControl.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: Severov_Right_Version\ copy.elf secondary-outputs
+main-build: EmbeddedControl.elf secondary-outputs
 
 # Tool invocations
-Severov_Right_Version\ copy.elf Severov_Right_Version\ copy.map: $(OBJS) $(USER_OBJS) /Users/viktoria/Desktop/Severov_Right_Version\ copy/STM32F407VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Severov_Right_Version copy.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/viktoria/Desktop/Severov_Right_Version copy/STM32F407VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Severov_Right_Version copy.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+EmbeddedControl.elf EmbeddedControl.map: $(OBJS) $(USER_OBJS) /Users/viktoria/Downloads/EmbeddedControl/STM32F303VCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "EmbeddedControl.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/viktoria/Downloads/EmbeddedControl/STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="EmbeddedControl.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -74,14 +74,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-Severov_Right_Version\ copy.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "Severov_Right_Version copy.list"
+EmbeddedControl.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "EmbeddedControl.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) Severov_Right_Version\ copy.elf Severov_Right_Version\ copy.list Severov_Right_Version\ copy.map Severov_Right_Version\\ copy.elf default.size.stdout
+	-$(RM) EmbeddedControl.elf EmbeddedControl.list EmbeddedControl.map default.size.stdout
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)

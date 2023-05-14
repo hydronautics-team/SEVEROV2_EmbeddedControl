@@ -1,0 +1,6 @@
+../Src/thrusters.c:32:6:thrustersInit	16	static
+../Src/thrusters.c:55:6:resetThrusters	16	static
+../Src/thrusters.c:70:6:fillThrustersRequest	48	static
+../Src/thrusters.c:101:6:fillThrustersResponse	32	static
+../Src/thrusters.c:117:6:formThrustVectors	72	static
+../Src/thrusters.c:147:9:resizeFloatToUint8	24	static

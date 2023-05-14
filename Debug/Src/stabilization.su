@@ -1,0 +1,3 @@
+../Src/stabilization.c:7:6:stabilizationInit	16	static
+../Src/stabilization.c:147:6:stabilizationStart	16	static
+../Src/stabilization.c:176:6:stabilizationUpdate	48	static

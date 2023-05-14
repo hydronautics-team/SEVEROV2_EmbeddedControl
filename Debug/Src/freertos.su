@@ -1,0 +1,13 @@
+../Src/freertos.c:121:6:vApplicationGetIdleTaskMemory	24	static
+../Src/freertos.c:134:6:vApplicationGetTimerTaskMemory	24	static
+../Src/freertos.c:148:6:MX_FREERTOS_Init	256	static
+../Src/freertos.c:238:6:func_tLedBlinkingTask	24	static
+../Src/freertos.c:262:6:func_tVmaCommTask	24	static
+../Src/freertos.c:302:6:func_tImuCommTask	24	static
+../Src/freertos.c:349:6:func_tStabilizationTask	24	static
+../Src/freertos.c:378:6:func_tDevCommTask	24	static
+../Src/freertos.c:417:6:func_tSensCommTask	24	static
+../Src/freertos.c:441:6:func_tPcCommTask	24	static
+../Src/freertos.c:454:6:func_tUartTimer	24	static
+../Src/freertos.c:496:6:tSilence_func	40	static
+../Src/freertos.c:541:6:tTechCommTImer_callback	16	static

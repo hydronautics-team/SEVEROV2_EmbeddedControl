@@ -1,4 +1,0 @@
-../Core/Src/FreeRTOSTick.c:3:10:fromMsToTick	16	static
-../Core/Src/FreeRTOSTick.c:8:10:fromSecToTick	16	static
-../Core/Src/FreeRTOSTick.c:12:7:fromTickToMs	16	static
-../Core/Src/FreeRTOSTick.c:16:7:fromTickToSec	16	static
